@@ -1,4 +1,3 @@
-// app/page.js
 "use client";
 
 import { useEffect, useState } from "react";
@@ -19,6 +18,7 @@ export default function Home() {
   const [tempName, setTempName] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("Semua");
+  const [error, setError] = useState(null);       // buat nampung pesan error
 
   const filteredFoods = foods.filter((food) => {
     // jangan ikutkan yang nonaktif
@@ -31,19 +31,73 @@ export default function Home() {
     return food.category === selectedCategory;
   });
 
+  // useEffect(() => {
+  //   async function fetchFoods() {
+  //     try {
+  //       const res = await fetch("/api/foods");
+  //       const data = await res.json();
+  //       setFoods(data);
+  //       if (data.length > 0) setCurrentFood(data[0]);
+  //     } catch (err) {
+  //       console.error(err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+  //   fetchFoods();
+  // }, []);
   useEffect(() => {
     async function fetchFoods() {
       try {
         const res = await fetch("/api/foods");
-        const data = await res.json();
+
+        if (!res.ok) {
+          const text = await res.text(); // log isi response biar tau salahnya
+          console.error("API /api/foods error:", res.status, text);
+          setError("Gagal mengambil data dari server");
+          setFoods([]);
+          return;
+        }
+
+        const text = await res.text();
+
+        // kalau responsenya kosong (ini yang bikin Unexpected end of JSON input)
+        if (!text) {
+          console.warn("Empty response from /api/foods");
+          setFoods([]);
+          return;
+        }
+
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          console.error("JSON parse error from /api/foods:", e, text);
+          setError("Data dari server tidak valid");
+          setFoods([]);
+          return;
+        }
+
+        if (!Array.isArray(data)) {
+          console.error("Data from /api/foods is not an array:", data);
+          setError("Format data dari server tidak sesuai");
+          setFoods([]);
+          return;
+        }
+
         setFoods(data);
-        if (data.length > 0) setCurrentFood(data[0]);
+        if (data.length > 0) {
+          setCurrentFood(data[0]);
+        }
       } catch (err) {
-        console.error(err);
+        console.error("fetchFoods client error:", err);
+        setError("Terjadi error saat memuat data");
+        setFoods([]);
       } finally {
         setLoading(false);
       }
     }
+
     fetchFoods();
   }, []);
 
@@ -168,10 +222,12 @@ export default function Home() {
         <button
           onClick={handleGacha}
           className="w-full py-4 rounded-2xl bg-white text-[#3642DE] font-bold text-lg disabled:opacity-60 active:scale-95 transition"
-          disabled={isRolling || loading || currentFood.length === 0}
+          disabled={isRolling || loading || currentFood.length === 0 || !!error}
         >
           {loading
             ? "Loading..."
+            : error
+            ? "Error"
             : isRolling
             ? "LAGI MIKIRIN MAKANAN..."
             : "GACHA MAKAN!"}
