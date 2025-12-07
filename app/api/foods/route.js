@@ -1,32 +1,62 @@
+// // app/api/foods/route.js
+// import { NextResponse } from "next/server";
+// import { connectDB } from "@/lib/db";
+// import { Food } from "@/models/Food";
+
+// export async function GET() {
+//   await connectDB();
+//   const foods = await Food.find({}).sort({ createdAt: -1 }).lean();
+//   return NextResponse.json(foods);
+// }
+
+// export async function POST(req) {
+//   try {
+//     await connectDB();
+//     const body = await req.json();
+
+//     const food = await Food.create({
+//       name: body.name,
+//       category: body.category,
+//       tags: body.tags || [],
+//       weight: body.weight ?? 1,
+//       isActive: body.isActive ?? true
+//     });
+
+//     return NextResponse.json(food, { status: 201 });
+//   } catch (err) {
+//     console.error(err);
+//     return NextResponse.json(
+//       { message: "Failed to create food" },
+//       { status: 500 }
+//     );
+//   }
+// }
 // app/api/foods/route.js
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/db";
-import { Food } from "@/models/Food";
+import { connectDB } from "../../../lib/db";
+import { Food } from "../../../models/Food";
 
 export async function GET() {
-  await connectDB();
-  const foods = await Food.find({}).sort({ createdAt: -1 }).lean();
-  return NextResponse.json(foods);
-}
-
-export async function POST(req) {
   try {
+    if (!process.env.MONGODB_URI) {
+      console.error("MONGODB_URI is not defined in production");
+      console.log("MONGODB_URI is not defined in production");
+      return NextResponse.json(
+        { message: "MONGODB_URI is not defined" },
+        { status: 500 }
+      );
+    }
+
     await connectDB();
-    const body = await req.json();
-
-    const food = await Food.create({
-      name: body.name,
-      category: body.category,
-      tags: body.tags || [],
-      weight: body.weight ?? 1,
-      isActive: body.isActive ?? true
-    });
-
-    return NextResponse.json(food, { status: 201 });
+    const foods = await Food.find({}).sort({ createdAt: -1 }).lean();
+    return NextResponse.json(foods);
   } catch (err) {
-    console.error(err);
+    console.error("GET /api/foods error:", err);
     return NextResponse.json(
-      { message: "Failed to create food" },
+      {
+        message: "Failed to fetch foods",
+        error: err.message || "Unknown error"
+      },
       { status: 500 }
     );
   }
