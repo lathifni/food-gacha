@@ -145,7 +145,10 @@ export default function Home() {
   };
 
   useEffect(() => {
-    toast("Selamat datang di Gacha Makan! 🍽️", {
+    toast("Gacha Makan & Minum! 🍽️🍹", {
+      icon: "👋",
+    });
+    toast("Selamat Datang", {
       icon: "👋",
     });
   }, []);
