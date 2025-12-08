@@ -168,14 +168,11 @@ export default function Home() {
       </div>
 
       <div className="w-full max-w-md text-center">
-        <h1 className="text-white text-3xl font-bold mb-2">Gacha Makan 🍽️</h1>
-        {/* <p className="text-white/80 text-xs mb-6">
-          Data makanan bisa diatur di halaman /food
-        </p> */}
+        <h1 className="text-white text-3xl font-bold mb-2">Gacha Makan & Minum 🍽️🍹</h1>
 
         <div className="bg-white/90 rounded-2xl shadow-xl p-6 mb-6">
           <p className="text-gray-600 text-sm mb-2">
-            Hari ini makan apa ya?
+            Hari ini makan/minum apa ya?
           </p>
 
           <div className="border rounded-xl px-4 py-6 mb-3 min-h-[80px] flex items-center justify-center">
@@ -236,14 +233,14 @@ export default function Home() {
             ? "Error"
             : isRolling
             ? "LAGI MIKIRIN MAKANAN..."
-            : "GACHA MAKAN!"}
+            : "GACHA MAKAN/MINUMAN!"}
         </button>
 
         <a
           href="/food"
-          className="block mt-4 text-white/80 text-xs underline"
+          className="block mt-4 text-white/80 underline"
         >
-          Kelola daftar makanan
+          Kelola daftar makanan/minuman
         </a>
       </div>
     </main>

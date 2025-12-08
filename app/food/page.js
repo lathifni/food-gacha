@@ -134,8 +134,8 @@ export default function FoodPage() {
     <main className="min-h-screen bg-slate-100 px-4 py-6">
       <div className="max-w-2xl mx-auto">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-xl font-bold">Kelola Makanan</h1>
-          <Link href="/" className="text-sm text-blue-600 underline">
+          <h1 className="text-2xl font-bold">Kelola Data Makanan Minuman</h1>
+          <Link href="/" className=" text-blue-600 underline">
             &larr; Kembali
           </Link>
         </div>
@@ -143,7 +143,7 @@ export default function FoodPage() {
         {/* Form */}
         <div className="bg-white rounded-xl shadow p-4 mb-6">
           <h2 className="font-semibold mb-3">
-            {editingId ? "Edit Makanan" : "Tambah Makanan"}
+            {editingId ? "Edit Makanan/Minuman" : "Tambah Makanan/Minuman"}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
@@ -237,7 +237,7 @@ export default function FoodPage() {
         {/* List */}
         <div className="bg-white rounded-xl shadow p-4">
           <div className="flex items-center justify-between mb-3 gap-2">
-            <h2 className="font-semibold">Daftar Makanan</h2>
+            <h2 className="font-semibold">Daftar Makanan/Minuman</h2>
             <select
               className="border rounded-lg px-2 py-1 text-xs bg-white"
               value={filterCategory}
