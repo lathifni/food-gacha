@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import confetti from "canvas-confetti";
+import toast from "react-hot-toast";
 
 const CATEGORY_OPTIONS = ["Semua", "Makanan Berat", "Cemilan", "Minuman", "Lainnya"];
 
@@ -143,6 +144,11 @@ export default function Home() {
     }, 80);
   };
 
+  useEffect(() => {
+    toast("Selamat datang di Gacha Makan! 🍽️", {
+      icon: "👋",
+    });
+  }, []);
 
   const displayName = (() => {
     if (loading) return "Lagi ngambil data...";

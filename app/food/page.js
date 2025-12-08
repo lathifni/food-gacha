@@ -3,8 +3,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 const CATEGORY_OPTIONS = ["Makanan Berat", "Cemilan", "Minuman", "Lainnya"];
-
+const FILTER_OPTIONS = ["Semua", ...CATEGORY_OPTIONS];
 
 export default function FoodPage() {
   const [foods, setFoods] = useState([]);
@@ -18,6 +19,19 @@ export default function FoodPage() {
 
   const [editingId, setEditingId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [filterCategory, setFilterCategory] = useState("Semua");
+
+  const sortedFoods = [...foods].sort((a, b) => {
+    const nameA = a.name?.toLowerCase() ?? "";
+    const nameB = b.name?.toLowerCase() ?? "";
+    return nameA.localeCompare(nameB);
+  });
+
+  // filter berdasarkan kategori yang dipilih di UI
+  const visibleFoods =
+    filterCategory === "Semua"
+      ? sortedFoods
+      : sortedFoods.filter((food) => food.category === filterCategory);
 
   const resetForm = () => {
     setName("");
@@ -77,8 +91,10 @@ export default function FoodPage() {
 
       if (!res.ok) {
         console.error("Failed submit");
+        toast.error("Oops, Gagal Menambahkan Makanan!");
       } else {
         await fetchFoods();
+        toast.success("Data Makanan Berhasil Disimpan!");
         resetForm();
       }
     } catch (err) {
@@ -103,8 +119,10 @@ export default function FoodPage() {
     try {
       const res = await fetch(`/api/foods/${id}`, { method: "DELETE" });
       if (!res.ok) {
+        toast.error("Oops, Gagal Menghapus Data");
         console.error("Failed delete");
       } else {
+        toast.success("Data Makanan Berhasil Dihapus 👍");
         fetchFoods();
       }
     } catch (err) {
@@ -162,13 +180,13 @@ export default function FoodPage() {
                 className="w-full border rounded-lg px-3 py-2 text-sm"
                 value={tagsInput}
                 onChange={(e) => setTagsInput(e.target.value)}
-                placeholder="pedas, murah, dekat kos"
+                placeholder="pedas, murah, enak, menggugah selera, penuh micin"
               />
             </div>
 
             <div className="flex gap-3 items-center">
               <div className="flex-1">
-                <label className="block text-sm mb-1">Weight</label>
+                <label className="block text-sm mb-1">Bobot</label>
                 <input
                   type="number"
                   min="1"
@@ -218,14 +236,27 @@ export default function FoodPage() {
 
         {/* List */}
         <div className="bg-white rounded-xl shadow p-4">
-          <h2 className="font-semibold mb-3">Daftar Makanan</h2>
+          <div className="flex items-center justify-between mb-3 gap-2">
+            <h2 className="font-semibold">Daftar Makanan</h2>
+            <select
+              className="border rounded-lg px-2 py-1 text-xs bg-white"
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+            >
+              {FILTER_OPTIONS.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat === "Semua" ? "Semua Kategori" : cat}
+                </option>
+              ))}
+            </select>
+          </div>
           {loading ? (
             <p className="text-sm text-gray-500">Loading...</p>
           ) : foods.length === 0 ? (
             <p className="text-sm text-gray-500">Belum ada data.</p>
           ) : (
             <ul className="space-y-3">
-              {foods.map((food) => (
+              {visibleFoods.map((food) => (
                 <li
                   key={food._id}
                   className="border rounded-lg px-3 py-2 flex justify-between items-start gap-3"
